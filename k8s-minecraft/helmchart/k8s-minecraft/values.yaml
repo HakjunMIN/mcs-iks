@@ -1,0 +1,46 @@
+replicaCount: 1
+
+image:
+  repository: "tbwlat/mc"
+  tag: "1.14.4"
+  pullPolicy: Always
+
+service:
+  type: NodePort
+  port: 25565
+  nodePort: 31111
+  name: minecraft
+
+monitor:
+  type: NodePort
+  port: 9225
+  nodePort: 31225
+  name: monitorport
+
+minecraft:
+  eula: true
+  jvm_xmx: 2048M
+
+ingress:
+  enabled: false
+
+SecurityContext: 1000
+
+Persistence:
+  Enabled: true
+  MountPath: "/minecraft-data/"
+  VolumeName: "minecraftdata"
+  ExistingClaim: "portal-minecraft"
+
+Resources: 
+  cpuRequest: 1000m
+  cpuLimit: 2000m
+  memoryRequest: 1024Mi
+  memoryLimit: 2048Mi
+
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

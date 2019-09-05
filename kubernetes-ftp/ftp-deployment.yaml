@@ -1,0 +1,45 @@
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: my-ftp
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: my-ftp
+    spec:
+      volumes:
+      - name: task-pv-storage
+        persistentVolumeClaim:
+          claimName: "portal-minecraft"
+      containers:
+      - name: my-ftp-container
+        image: tbwlat/vsftpd:1.0.0
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 21
+          protocol: TCP
+          name: "ftp-server"
+        volumeMounts:
+        - mountPath: "/minecraft-data"
+          name: task-pv-storage
+        env:
+        - name: FTP_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: ftpuser
+        - name: FTP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mysecret
+              key: ftppassword
+        - name: PASV_ADDRESS
+          ### This IP should be changed to External IP of node
+          value: <EXTERNAL_IP>
+        - name: PASV_MIN_PORT
+          value: "31100"
+        - name: PASV_MAX_PORT
+          value: "31101"
